@@ -1,6 +1,7 @@
 "use client"
 
 import React, { Suspense, useEffect, useMemo, useRef, useState, createContext, useContext } from "react"
+import { createPortal } from "react-dom"
 import * as THREE from "three"
 import { Canvas, useFrame } from "@react-three/fiber"
 import {
@@ -79,18 +80,17 @@ function CardProvider({ children }: { children: React.ReactNode }) {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
 
   const cards: Card[] = [
-    // { id: "1", imageUrl: "/ref/💜.jpg", alt: "Cutie", title: "Cutie" },
-    { id: "2", imageUrl: "/ref/girl.jpg", alt: "Baddie", title: "Baddie" },
-    { id: "3", imageUrl: "/ref/girl2.jpg", alt: "Angel", title: "Angel" },
-    { id: "4", imageUrl: "/ref/girl3.jpg", alt: "Dreamgirl", title: "Dreamgirl" },
-    { id: "5", imageUrl: "/ref/girl4.jpg", alt: "Sweetheart", title: "Sweetheart" },
-    { id: "6", imageUrl: "/ref/girl5.jpg", alt: "Icon", title: "Icon" },
-    { id: "7", imageUrl: "/ref/girl6.jpg", alt: "Stunner", title: "Stunner" },
-    { id: "8", imageUrl: "/ref/girl7.jpg", alt: "Babe", title: "Babe" },
-    { id: "9", imageUrl: "/ref/girl8.jpg", alt: "Darling", title: "Darling" },
-    { id: "10", imageUrl: "/ref/girl9.jpg", alt: "Sunshine", title: "Sunshine" },
-    { id: "11", imageUrl: "/ref/girl10.jpg", alt: "Queen", title: "Queen" },
-    { id: "12", imageUrl: "/ref/girl11.jpg", alt: "Heartbreaker", title: "Heartbreaker" },
+    // 5 group photos (group7 and group8 compulsory) + 5 sanju photos = 10 total
+    { id: "1", imageUrl: "/images/group7.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "2", imageUrl: "/images/group8.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "3", imageUrl: "/images/group1.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "4", imageUrl: "/images/group3.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "5", imageUrl: "/images/group5.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "6", imageUrl: "/images/sanju1.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "7", imageUrl: "/images/sanju2.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "8", imageUrl: "/images/sanju3.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "9", imageUrl: "/images/sanju9.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "10", imageUrl: "/images/sanju12.jpeg", alt: "Best Memories", title: "Best Memories" },
   ]
 
   // const cards: Card[] = [
@@ -212,6 +212,41 @@ function StarfieldBackground() {
   )
 }
 
+function PhotoGrid() {
+  const { cards, setSelectedCard } = useCard()
+
+  return (
+    <section aria-label="Photo gallery" className="relative z-10 mx-auto w-full max-w-5xl px-4 py-10 md:px-8 md:py-16">
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">A galaxy of you</h2>
+        <p className="mt-2 text-sm text-white/70">Scroll through the memories. Tap a photo to take a closer look.</p>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        {cards.map((card) => (
+          <button
+            key={card.id}
+            type="button"
+            onClick={() => setSelectedCard(card)}
+            aria-label={`View ${card.title}`}
+            aria-haspopup="dialog"
+            className="min-h-11 min-w-0 rounded-2xl border border-white/15 bg-[#1F2121]/90 p-2 text-white shadow-lg transition-colors hover:border-[#31b8c6] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#31b8c6] sm:p-3"
+          >
+            <img
+              src={card.imageUrl || "/placeholder.svg"}
+              alt={card.alt}
+              className="aspect-[3/4] w-full rounded-xl object-cover"
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
+            <span className="block break-words px-1 pb-1 pt-3 text-sm font-medium">{card.title}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 /* =========================
    Floating Card (inlined)
    ========================= */
@@ -304,11 +339,26 @@ function CardModal() {
   const { selectedCard, setSelectedCard } = useCard()
   const [isFavorited, setIsFavorited] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const titleId = React.useId()
+
+  useEffect(() => {
+    if (!selectedCard || !dialogRef.current) return
+    const dialog = dialogRef.current
+    const previouslyFocused = document.activeElement
+    dialog.showModal()
+    return () => {
+      dialog.close()
+      if (previouslyFocused instanceof HTMLElement && previouslyFocused.isConnected) {
+        previouslyFocused.focus({ preventScroll: true })
+      }
+    }
+  }, [selectedCard])
 
   if (!selectedCard) return null
 
   const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!cardRef.current) return
+    if (!cardRef.current || !window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)").matches) return
     const rect = cardRef.current.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
@@ -333,11 +383,20 @@ function CardModal() {
     if (e.target === e.currentTarget) handleClose()
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm" onClick={handleBackdropClick}>
-      <div className="relative max-w-md w-full mx-4">
-        <button onClick={handleClose} className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10">
-          <X className="w-8 h-8" />
+  return createPortal(
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={titleId}
+      onCancel={(event) => {
+        event.preventDefault()
+        handleClose()
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto overscroll-contain border-0 bg-transparent p-0 text-white backdrop:bg-black/80 backdrop:backdrop-blur-sm"
+    >
+    <div className="flex min-h-full items-center justify-center px-4 py-16" onClick={handleBackdropClick}>
+      <div className="relative max-w-md w-full">
+        <button type="button" autoFocus aria-label="Close photo" onClick={handleClose} className="absolute -top-12 right-0 flex h-11 w-11 items-center justify-center rounded-full text-white hover:text-gray-300 transition-colors z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#31b8c6]">
+          <X className="w-8 h-8" aria-hidden="true" />
         </button>
 
         <div style={{ perspective: "1000px" }} className="w-full">
@@ -353,51 +412,115 @@ function CardModal() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            <div className="relative w-full mb-4" style={{ aspectRatio: "3 / 4" }}>
+            <div className="relative w-full mb-4 max-h-[55dvh] md:max-h-none" style={{ aspectRatio: "3 / 4" }}>
               <img
                 loading="lazy"
-                className="absolute inset-0 h-full w-full rounded-[16px] bg-[#000000] object-cover"
+                className="absolute inset-0 h-full w-full rounded-[16px] bg-[#000000] object-contain md:object-cover"
                 alt={selectedCard.alt}
                 src={selectedCard.imageUrl || "/placeholder.svg"}
                 style={{ boxShadow: "rgba(0, 0, 0, 0.05) 0px 5px 6px 0px", opacity: 1 }}
               />
             </div>
 
-            <h3 className="text-white text-lg font-semibold mb-4 text-center">{selectedCard.title}</h3>
+            <h3 id={titleId} className="text-white text-lg font-semibold mb-4 text-center">{selectedCard.title}</h3>
 
             <div className="flex gap-2">
-              <button
-                type="button"
-                className="inline-flex h-9 flex-1 items-center justify-center rounded-lg text-base font-medium text-black outline-none transition duration-300 ease-out hover:opacity-80 active:scale-[0.97]"
+              <a
+                href={selectedCard.imageUrl}
+                download
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-lg text-base font-medium text-black transition duration-300 ease-out hover:opacity-80 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 style={{ backgroundColor: "#31b8c6" }}
               >
-                <div className="flex items-center gap-1.5">
-                  <Download className="h-4 w-4" strokeWidth={1.8} />
+                <span className="flex items-center gap-1.5">
+                  <Download className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
                   <span>Download</span>
-                </div>
-              </button>
+                </span>
+              </a>
               <button
                 type="button"
                 onClick={toggleFavorite}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-black outline-none transition duration-300 ease-out hover:opacity-80 active:scale-[0.97]"
+                aria-label="Favorite photo"
+                aria-pressed={isFavorited}
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-black transition duration-300 ease-out hover:opacity-80 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 style={{ backgroundColor: "#31b8c6" }}
               >
-                <Heart className="h-4 w-4" strokeWidth={1.8} fill={isFavorited ? "currentColor" : "none"} />
+                <Heart className="h-4 w-4" strokeWidth={1.8} fill={isFavorited ? "currentColor" : "none"} aria-hidden="true" />
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </dialog>,
+    document.body
   )
+}
+
+/* =========================
+   Auto Camera Tour (inlined)
+   ========================= */
+
+/**
+ * Flies the camera from photo to photo on its own: eases in to frame a
+ * card, holds it still for HOLD_SECONDS, then moves to the next one and
+ * wraps back to the first after the last photo, so it loops forever.
+ */
+const HOLD_SECONDS = 2
+const ARRIVE_DISTANCE = 0.8
+
+function CameraTour({
+  positions,
+  paused,
+}: {
+  positions: { x: number; y: number; z: number }[]
+  paused: boolean
+}) {
+  const indexRef = useRef(0)
+  const arrivedRef = useRef(false)
+  const holdUntilRef = useRef(0)
+  const desiredPos = useRef(new THREE.Vector3())
+  const cardVec = useRef(new THREE.Vector3())
+  const lookAt = useRef(new THREE.Vector3())
+
+  useFrame(({ camera, clock }, delta) => {
+    if (paused || positions.length === 0) return
+
+    const p = positions[indexRef.current % positions.length]
+    cardVec.current.set(p.x, p.y, p.z)
+
+    // Stand off from the card along its own direction from the centre so
+    // the photo faces the camera (cards always lookAt the camera).
+    const standoff = cardVec.current.length() + 9
+    desiredPos.current.copy(cardVec.current).normalize().multiplyScalar(standoff)
+
+    // Frame-rate independent easing toward the target.
+    const ease = 1 - Math.pow(0.0015, delta)
+    camera.position.lerp(desiredPos.current, ease)
+    lookAt.current.lerp(cardVec.current, ease)
+    camera.lookAt(lookAt.current)
+
+    const now = clock.getElapsedTime()
+    const distance = camera.position.distanceTo(desiredPos.current)
+
+    if (!arrivedRef.current && distance < ARRIVE_DISTANCE) {
+      arrivedRef.current = true
+      holdUntilRef.current = now + HOLD_SECONDS
+    }
+    if (arrivedRef.current && now >= holdUntilRef.current) {
+      arrivedRef.current = false
+      indexRef.current = (indexRef.current + 1) % positions.length
+    }
+  })
+
+  return null
 }
 
 /* =========================
    Card Galaxy (inlined)
    ========================= */
 
-function CardGalaxy() {
-  const { cards } = useCard()
+function CardGalaxy({ tourOn = false }: { tourOn?: boolean }) {
+  const { cards, selectedCard } = useCard()
 
   const cardPositions = useMemo(() => {
     const positions: {
@@ -449,6 +572,8 @@ function CardGalaxy() {
       {cards.map((card, i) => (
         <FloatingCard key={card.id} card={card} position={cardPositions[i]} />
       ))}
+
+      <CameraTour positions={cardPositions} paused={!tourOn || !!selectedCard} />
     </>
   )
 }
@@ -458,10 +583,10 @@ function CardGalaxy() {
    ========================= */
 
 class CanvasErrorBoundary extends React.Component<
-  { children: React.ReactNode; fallback: React.ReactNode },
+  { children: React.ReactNode; fallback: React.ReactNode; onError?: () => void },
   { hasError: boolean }
 > {
-  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode; onError?: () => void }) {
     super(props)
     this.state = { hasError: false }
   }
@@ -470,6 +595,7 @@ class CanvasErrorBoundary extends React.Component<
   }
   componentDidCatch(error: Error) {
     console.warn("Canvas render error (falling back):", error)
+    this.props.onError?.()
   }
   render() {
     if (this.state.hasError) return this.props.fallback
@@ -484,30 +610,40 @@ class CanvasErrorBoundary extends React.Component<
 export default function StellarCardGallerySingle() {
   const [mounted, setMounted] = useState(false)
   const [webglAvailable, setWebglAvailable] = useState(false)
+  const [isMobile, setIsMobile] = useState(true)
+  const [tourOn, setTourOn] = useState(true)
 
   useEffect(() => {
     // Detect WebGL support once on mount, before rendering anything Three.js related.
     // Uses the Brave-safe detectWebGL() helper (try/catch + failIfMajorPerformanceCaveat).
-    setWebglAvailable(!!detectWebGL())
-    setMounted(true)
+    const desktop = window.matchMedia("(min-width: 768px)")
+    let supported: boolean | undefined
+    const updateViewport = () => {
+      setIsMobile(!desktop.matches)
+      if (desktop.matches && supported === undefined) supported = !!detectWebGL()
+      setWebglAvailable(desktop.matches && !!supported)
+      setMounted(true)
+    }
+    updateViewport()
+    desktop.addEventListener("change", updateViewport)
+    return () => desktop.removeEventListener("change", updateViewport)
   }, [])
 
   if (!mounted) {
-    return <div className="w-full h-screen bg-black" />
+    return <div className="w-full min-h-[60svh] md:h-screen bg-black" />
   }
+
+  const showGalaxy = !isMobile && webglAvailable
 
   return (
     <CardProvider>
-      <div className="w-full h-screen relative overflow-hidden bg-black">
-        <StarfieldBackground />
+      <div className={showGalaxy ? "w-full h-screen relative overflow-hidden bg-black" : "w-full relative bg-[radial-gradient(ellipse_at_top,#0d0d2b_0%,#000000_100%)]"}>
+        {showGalaxy && <StarfieldBackground />}
 
-        {webglAvailable ? (
+        {showGalaxy ? (
           <CanvasErrorBoundary
-            fallback={
-              <div className="absolute inset-0 z-10 flex items-center justify-center">
-                <p className="text-white/50 text-sm">3D view not available in this browser</p>
-              </div>
-            }
+            fallback={<PhotoGrid />}
+            onError={() => setWebglAvailable(false)}
           >
             <Canvas
               camera={{ position: [0, 0, 15], fov: 60 }}
@@ -526,8 +662,9 @@ export default function StellarCardGallerySingle() {
                 <ambientLight intensity={0.8} />
                 <directionalLight position={[10, 10, 10]} intensity={1.2} />
                 <pointLight position={[-10, -10, -10]} intensity={0.5} />
-                <CardGalaxy />
+                <CardGalaxy tourOn={tourOn} />
                 <OrbitControls
+                  enabled={!tourOn}
                   enablePan
                   enableZoom={false}
                   enableRotate
@@ -543,17 +680,17 @@ export default function StellarCardGallerySingle() {
             </Canvas>
           </CanvasErrorBoundary>
         ) : (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-            <div className="text-center px-6 max-w-sm">
-              <p className="text-white/60 text-sm">3D view didn't load.</p>
-              <p className="text-white/40 text-xs mt-2">
-                If you're on Brave, click the Shields icon in the address bar,
-                open "Advanced Controls," and set "Block Fingerprinting" to
-                Standard (or add a site exception) — Strict mode disables WebGL
-                by default.
-              </p>
-            </div>
-          </div>
+          <PhotoGrid />
+        )}
+
+        {showGalaxy && (
+          <button
+            type="button"
+            onClick={() => setTourOn((v) => !v)}
+            className="absolute bottom-6 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/15 bg-black/50 px-5 py-3 text-xs uppercase tracking-widest text-white/80 backdrop-blur transition-colors hover:bg-black/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#31b8c6]"
+          >
+            {tourOn ? "Pause tour" : "Play tour"}
+          </button>
         )}
 
         <CardModal />

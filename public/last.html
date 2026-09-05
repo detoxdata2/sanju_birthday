@@ -414,17 +414,44 @@ body{
 
 .replay:hover{color:var(--gold);}
 
-@media (max-width:480px){
-  body{align-items:stretch; justify-content:stretch;}
+@media (max-width:480px), (max-height:500px) and (pointer:coarse){
+  body{
+    height:100vh;
+    height:100svh;
+    align-items:stretch;
+    justify-content:stretch;
+  }
   .phone{
-    width:100vw;
-    height:100dvh;
+    width:100%;
+    height:100%;
     max-height:none;
     border-radius:0;
     padding:0;
     box-shadow:none;
   }
-  .screen{border-radius:0;}
+  .screen{
+    border-radius:0;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-left:env(safe-area-inset-left,0px);
+    padding-right:env(safe-area-inset-right,0px);
+  }
+  .notch{display:none;}
+  .status,.header,.composer{flex-shrink:0;}
+  .status{padding:14px 20px 6px;}
+  .sub,.divider,.receipt{font-size:12px;}
+  .chat{min-height:0;}
+  .chat > *{flex-shrink:0;}
+  .bubble{font-size:16px; overflow-wrap:anywhere;}
+  .pill{min-width:0; min-height:44px; font-size:16px;}
+  .typed{white-space:nowrap; flex-shrink:0;}
+  .cursor{flex-shrink:0;}
+  .send{width:44px; height:44px; flex-shrink:0; touch-action:manipulation;}
+  .overlay{
+    overflow-y:auto;
+    padding:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px));
+  }
+  .overlay-card{width:min(100%,320px); margin:auto; padding:24px 20px;}
+  .overlay p{font-size:16px;}
   .footer{display:none;}
 }
 </style>
@@ -462,7 +489,7 @@ body{
         <img src="/ref/girl3.jpg" alt="Pipi" />
       </div>
       <div>
-        <div class="name">My love ♥️</div>
+        <div class="name">My dear ♥️</div>
         <div class="sub">iMessage · online now</div>
       </div>
     </div>
@@ -492,12 +519,13 @@ body{
 
 <script>
 const MESSAGES = [
-  "Happppyeee birthday love,",
-  "ik last bday pr ek problem hogyi thi isliye ye wala bilkul special banana chahta hu,",
-  "i hope ye dekh ke apke chotu se face pe ek badi si smile to aai hogi,",
-  "nahi bhi aai to kal 11 baje se or surprises milna start ho jayengeee,",
-  "Afterall m hito hu jiski responsibility h wo smile maintain krna 😭",
-  "Happppyeee birthday love 🫂"
+  "Happy Birthday my dear 🎂",
+  "You're not just a friend, you're a blessing and a loving one. I'm so lucky to have you in my life.",
+  "There's a bond between us that makes every moment feel lighter, every day feel warmer, and every problem feel smaller.",
+  "Let this be a new chapter — a new beginning for a new life ahead. May this year bring you everything you've quietly wished for.",
+  "Happy Birthday once again. May God bless you and your family with all your heart's desires 🙏🤍",
+  "Lots of love and a small note from Suhas \u{1F49B}",
+  "Miss u moreee... \u{1F97A}\u{2764}\u{FE0F}"
 ];
 
 const chat = document.getElementById('chat');
@@ -517,7 +545,7 @@ function updateTime(){
   });
 
   timeEl.textContent = t;
-  divider.textContent = `Today ${t}`;
+  divider.textContent = 'Today';
 }
 
 updateTime();

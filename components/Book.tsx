@@ -14,11 +14,17 @@ export default function Book() {
     const pageFlip = new PageFlip(bookRef.current, {
       width: 400,
       height: 500,
-      autoSize: false,
+      size: "stretch",
+      minWidth: 240,
+      maxWidth: 400,
+      minHeight: 300,
+      maxHeight: 500,
+      autoSize: true,
+      mobileScrollSupport: false,
       showCover: true,
       drawShadow: true,
       maxShadowOpacity: 0.5,
-      usePortrait: false,
+      usePortrait: true,
       startPage: 0,
     });
 
@@ -31,7 +37,7 @@ export default function Book() {
   }, []);
 
   return (
-    <div ref={bookRef}>
+    <div ref={bookRef} className="birthday-book" style={{ touchAction: "pan-y pinch-zoom" }}>
       {/* Front Cover */}
       <div
         className="book-page bg-blue-700 text-white"
@@ -115,7 +121,7 @@ export default function Book() {
         ></Image>
 
         <Image
-          src="/ref/girl.jpg"
+          src="/images/group1.jpeg"
           alt="Front Cover"
           fill
           priority
@@ -178,7 +184,7 @@ export default function Book() {
         ></Image>
 
         <Image
-          src="/ref/girl.jpg"
+          src="/images/group2.jpeg"
           alt="Front Cover"
           fill
           priority
@@ -187,7 +193,7 @@ export default function Book() {
         ></Image>
 
         <Image
-          src="/ref/girl2.jpg"
+          src="/images/group3.jpeg"
           alt="Front Cover"
           fill
           priority
@@ -196,7 +202,7 @@ export default function Book() {
         ></Image>
 
         <Image
-          src="/ref/girl3.jpg"
+          src="/images/group4.jpeg"
           alt="Front Cover"
           fill
           priority
@@ -281,7 +287,7 @@ export default function Book() {
         />
 
         <Image
-          src="/ref/girl4.jpg"
+          src="/images/group5.jpeg"
           alt="Frame"
           fill
           priority
@@ -381,7 +387,7 @@ export default function Book() {
         />
 
         <Image
-          src="/ref/girl5.jpg"
+          src="/images/group6.jpeg"
           alt="Disk"
           fill
           priority
@@ -468,7 +474,7 @@ export default function Book() {
         />
 
         <Image
-          src="/ref/girl4.jpg"
+          src="/images/group7.jpeg"
           alt="Disk"
           fill
           priority
@@ -477,7 +483,7 @@ export default function Book() {
         />
 
         <Image
-          src="/ref/girl10.jpg"
+          src="/images/group8.jpeg"
           alt="Disk"
           fill
           priority
@@ -547,7 +553,7 @@ export default function Book() {
 
 
           <Image
-          src="/ref/girl9.jpg"
+          src="/images/group9.jpeg"
           alt="Disk"
           fill
           priority
@@ -556,7 +562,7 @@ export default function Book() {
         />
         
           <Image
-          src="/ref/girl8.jpg"
+          src="/images/group10.jpeg"
           alt="Disk"
           fill
           priority

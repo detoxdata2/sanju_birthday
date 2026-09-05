@@ -6,20 +6,20 @@ import MarqueeAlongSvgPath from "../LineCmp";
 const path =
   "M1 209.434C58.5872 255.935 387.926 325.938 482.583 209.434C600.905 63.8051 525.516 -43.2211 427.332 19.9613C329.149 83.1436 352.902 242.723 515.041 267.302C644.752 286.966 943.56 181.94 995 156.5";
 
-// Local photos from /public/ref — resolve to /ref/*.jpg at runtime.
+// Local photos from /public/images — resolve to /images/*.jpeg at runtime.
 const imgs = [
-  { src: "/ref/heart.jpg" },
-  { src: "/ref/girl.jpg" },
-  { src: "/ref/girl2.jpg" },
-  { src: "/ref/girl3.jpg" },
-  { src: "/ref/girl4.jpg" },
-  { src: "/ref/girl5.jpg" },
-  { src: "/ref/girl6.jpg" },
-  { src: "/ref/girl7.jpg" },
-  { src: "/ref/girl8.jpg" },
-  { src: "/ref/girl9.jpg" },
-  { src: "/ref/girl10.jpg" },
-  { src: "/ref/girl11.jpg" },
+  { src: "/images/sanju1.jpeg" },
+  { src: "/images/sanju2.jpeg" },
+  { src: "/images/sanju3.jpeg" },
+  { src: "/images/sanj4.jpeg" },
+  { src: "/images/sanju5.jpeg" },
+  { src: "/images/snaju6.jpeg" },
+  { src: "/images/sanju7.jpeg" },
+  { src: "/images/sanju8.jpeg" },
+  { src: "/images/sanju9.jpeg" },
+  { src: "/images/sanju10.jpeg" },
+  { src: "/images/sanju11.jpeg" },
+  { src: "/images/sanju12.jpeg" },
 ];
 
 // const imgs = [
@@ -41,9 +41,30 @@ const imgs = [
 
 
 
+// The trail is laid out in the path's own 996x330 coordinate space and then
+// scaled down to the container width, so on a phone every photo shrinks with
+// it. Phones therefore get their own numbers: fewer photos (they'd overlap on
+// the shorter, scaled-down path) and a larger source size, so the trail reads
+// at roughly the same on-screen size it does on a laptop.
+const useMediaQuery = (query: string) => {
+  const [matches, setMatches] = React.useState(false);
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(query);
+    const sync = () => setMatches(mql.matches);
+    sync();
+    mql.addEventListener("change", sync);
+    return () => mql.removeEventListener("change", sync);
+  }, [query]);
+
+  return matches;
+};
+
 export const HeroSection = () => {
+  const isPhone = useMediaQuery("(max-width: 767px)");
+
   return (
-    <section className="relative overflow-hidden flex min-h-screen w-full flex-col overflow-x-hidden bg-[#FAFAF7]">
+    <section className="birthday-hero relative overflow-hidden flex min-h-dvh w-full flex-col overflow-x-hidden bg-[#FAFAF7]">
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Work+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap");
 
@@ -60,12 +81,12 @@ export const HeroSection = () => {
 
       {/* Top row: quiet date stamp, nothing else competing for attention */}
       <div className="hero-mono flex items-center justify-between px-8 pt-8 text-[11px] uppercase tracking-[0.25em] text-[#8A8A80] sm:px-14">
-        <span>Aug 5</span>
+        <span>Sep 5</span>
         {/* <span>One more lap</span> */}
       </div>
 
       {/* Headline — centered in the upper half, generous but not stretched to fill the screen */}
-      <div className="px-8 pt-16 sm:px-14 sm:pt-20">
+      <div className="hero-copy px-8 pt-16 sm:px-14 sm:pt-20">
         <h1 className="hero-display text-[15vw] leading-[0.86] tracking-tight text-[#14140F] sm:text-7xl lg:text-8xl">
           <span className="font-light">Happy</span>
           <br />
@@ -80,16 +101,20 @@ export const HeroSection = () => {
       </div>
 
       {/* The trail — moved up under the headline, full-bleed edge to edge, tilted */}
-      <div className=" absolute top-50 left-1/2 mt-0 w-screen -rotate-10 -translate-x-1/2 ">
+      <div className="hero-trail absolute top-50 left-1/2 mt-0 w-screen -rotate-10 -translate-x-1/2">
         <MarqueeAlongSvgPath
+          /* MarqueeAlongSvgPath runs a hook per item, so changing `repeat` on a
+             live instance trips React's "fewer hooks than expected" - key it on
+             the breakpoint so the switch remounts instead of re-rendering. */
+          key={isPhone ? "phone" : "desktop"}
           path={path}
           viewBox="0 0 996 330"
           width="100%"
-          height="300"
+          height={isPhone ? 240 : 300}
           baseVelocity={5}
           slowdownOnHover={true}
           draggable={true}
-          repeat={2}
+          repeat={isPhone ? 1 : 2}
           dragSensitivity={0.08}
           dragVelocityDecay={0.98}
           slowDownFactor={0.05}
@@ -101,7 +126,7 @@ export const HeroSection = () => {
           {imgs.map((img, i) => (
             <div
               key={i}
-              className="h-14 w-14 overflow-hidden border border-[#14140F]/15 bg-[#14140F]/5 transition-transform duration-300 ease-out hover:scale-105"
+              className="hero-photo h-14 w-14 overflow-hidden border border-[#14140F]/15 bg-[#14140F]/5 transition-transform duration-300 ease-out hover:scale-105"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

@@ -27,6 +27,124 @@ body {
   padding: 0;
 }
 
+/* ── Mobile compatibility for the birthday experience ─────────────── */
+/* Phones get natural document scrolling so swipe gestures move the
+   page instead of getting trapped inside fixed-height snap sections.
+   Desktop (>=768px) keeps the original full-screen snap scrolling. */
+@media (max-width: 767px) {
+  .birthday-scroll {
+    overflow-y: auto !important;
+  }
+  .birthday-scroll.snap-y {
+    scroll-snap-type: none !important;
+  }
+  .birthday-scroll > section {
+    height: auto !important;
+    min-height: 100dvh;
+    scroll-snap-align: none !important;
+  }
+  /* Embedded reveal pages should not force a fixed viewport height on
+     phones — let them size to the section and allow the page to scroll. */
+  .birthday-embed {
+    height: 100dvh;
+  }
+  .birthday-embed iframe {
+    height: 100%;
+    min-height: 100dvh;
+  }
+  /* Small "continue" affordance shown only on phones, so users can
+     move past the embedded reveal iframe without fighting its inner
+     scroll. Hidden on desktop where snap scrolling takes over. */
+  .embed-next {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    padding: 10px 18px;
+    min-height: 44px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    z-index: 20;
+    backdrop-filter: blur(8px);
+  }
+  .embed-next:hover,
+  .embed-next:active {
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  /* Hero: keep the headline + message readable above the tilted photo
+     trail. On narrow screens the trail can overlap the copy, so we
+     shrink the trail and push it below the text. */
+  .hero-trail {
+    top: auto !important;
+    bottom: 12% !important;
+    /* Inset from both edges so the photos sitting at the very ends of the
+       path - and the corners the tilt throws outward - stay on screen. */
+    width: 86vw !important;
+    left: 50% !important;
+    /* Tailwind v4 emits -translate-x-1/2 and -rotate-10 as the individual
+       `translate` / `rotate` properties, which compose on top of `transform`.
+       Repeating the centring translate here shifted the whole trail a full
+       width off the left edge - so override those properties instead. */
+    translate: -50% 0 !important;
+    rotate: -6deg !important;
+    transform: none !important;
+    transform-origin: center center;
+  }
+  /* Sized in the path's own coordinate space, which the component scales by
+     containerWidth/996 (~0.34 on a phone) - so 7.5rem here lands at roughly
+     the 40px the photos read at on a laptop, instead of shrinking to specks. */
+  .hero-photo {
+    width: 7.5rem !important;
+    height: 7.5rem !important;
+  }
+
+  /* Love gallery: the desktop polaroids use absolute positions tuned
+     for a large canvas. On phones we collapse them into a simple
+     scrollable column so they never overflow or overlap the caption. */
+  .love-gallery {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 80px 16px 96px;
+    min-height: 100dvh;
+  }
+  .love-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: min(78vw, 320px);
+  }
+  .love-card img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* Book: page-flip can intercept touch on small screens. Allow the
+     surrounding page to scroll while keeping the book itself usable. */
+  .birthday-book {
+    transform: scale(0.82);
+    transform-origin: center center;
+  }
+}
+
+@media (min-width: 768px) {
+  .embed-next {
+    display: none;
+  }
+}
+
 /* Hide Spline watermark */
 a[href*="spline.design"] {
   display: none !important;

@@ -186,8 +186,13 @@ const MarqueeAlongSvgPath = ({
         }
 
         updateScale()
+        const observer = new ResizeObserver(updateScale)
+        if (container.current) observer.observe(container.current)
         window.addEventListener("resize", updateScale)
-        return () => window.removeEventListener("resize", updateScale)
+        return () => {
+            observer.disconnect()
+            window.removeEventListener("resize", updateScale)
+        }
     }, [responsive, viewBox])
 
     // Create an array of items outside of the render function
@@ -370,7 +375,9 @@ const MarqueeAlongSvgPath = ({
 
     const handlePointerUp = (e: React.PointerEvent) => {
         if (!draggable) return
-            ; (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+        if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+            e.currentTarget.releasePointerCapture(e.pointerId)
+        }
         isDragging.current = false
 
         if (grabCursor) {
@@ -385,6 +392,8 @@ const MarqueeAlongSvgPath = ({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
+            onLostPointerCapture={handlePointerUp}
+            style={{ touchAction: "pan-y pinch-zoom" }}
             className={cn("relative", className)}
         >
             <div

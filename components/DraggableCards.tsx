@@ -22,6 +22,7 @@ export const DraggableCardBody = ({
   const mouseY = useMotionValue(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const controls = useAnimationControls();
+  const [dragEnabled, setDragEnabled] = useState(false);
   const [constraints, setConstraints] = useState({
     top: 0,
     left: 0,
@@ -62,6 +63,7 @@ export const DraggableCardBody = ({
     // Update constraints when component mounts or window resizes
     const updateConstraints = () => {
       if (typeof window !== "undefined") {
+        setDragEnabled(window.matchMedia("(min-width: 768px) and (pointer: fine)").matches);
         setConstraints({
           top: -window.innerHeight / 2,
           left: -window.innerWidth / 2,
@@ -107,7 +109,7 @@ export const DraggableCardBody = ({
   return (
     <motion.div
       ref={cardRef}
-      drag
+      drag={dragEnabled}
       dragConstraints={constraints}
       onDragStart={() => {
         document.body.style.cursor = "grabbing";
@@ -157,6 +159,7 @@ export const DraggableCardBody = ({
         rotateY,
         opacity,
         willChange: "transform",
+        touchAction: dragEnabled ? "none" : "pan-y pinch-zoom",
       }}
       animate={controls}
       whileHover={{ scale: 1.02 }}

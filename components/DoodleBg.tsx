@@ -414,6 +414,8 @@ export default function DoodleBackgroundDemo() {
         }
 
         .stage__book {
+          width: min(800px, calc(100% - 32px));
+          padding-block: 48px;
           position: relative;
           z-index: 5;
           display: flex;
@@ -442,6 +444,8 @@ export default function DoodleBackgroundDemo() {
 
         @media (max-width: 640px) {
           .stage__traces { transform: scale(0.6); transform-origin: 50% 40%; opacity: 0.35; }
+          .stage__book { padding-block: 24px; }
+          .stage__book-shadow { display: none; }
         }
 
         @media (prefers-reduced-motion: reduce) {

@@ -24,16 +24,16 @@ const handwriting = Caveat({
 // ];
 
 const images = [
-  "/ref/girl2.jpg",
-  "/ref/girl3.jpg",
-  "/ref/girl4.jpg",
-  "/ref/girl5.jpg",
-  "/ref/girl6.jpg",
-  "/ref/girl7.jpg",
-  "/ref/girl8.jpg",
-  "/ref/girl9.jpg",
-  "/ref/girl10.jpg",
-  "/ref/girl11.jpg",
+  "/images/cutie.jpeg",
+  "/images/baddie.jpeg",
+  "/images/preety.jpeg",
+  "/images/mylove.jpeg",
+  "/images/sunnshine.jpeg",
+  "/images/beautiful.jpeg",
+  "/images/dreamgirl.jpeg",
+  "/images/queen.jpeg",
+  "/images/myfav1.jpeg",
+  "/images/myfav2.jpeg",
 ];
 
 const captions = [
@@ -42,10 +42,11 @@ const captions = [
   "Pretty ✨",
   "My Love 🤍",
   "Sunshine ☀️",
-  // "Angel 🪽",
   "Beautiful 🌸",
   "Dream Girl 💫",
   "Queen 👑",
+  "My Favorite ❤️",
+  "My Favorite 💘",
 ];
 
 const positions = [
@@ -58,14 +59,16 @@ const positions = [
   "bottom-[10%] left-[18%] rotate-[-10deg]",
   "bottom-[12%] left-[45%] rotate-[5deg]",
   "bottom-[8%] right-[15%] rotate-[-7deg]",
+  "top-[25%] right-[28%] rotate-[12deg]",
 ];
 
 export default function LoveGallery() {
   return (
     <DraggableCardContainer
       className="
+        love-gallery
         relative
-        min-h-screen
+        min-h-dvh
         overflow-visible
         bg-[#d9d3c7]
 
@@ -85,8 +88,9 @@ export default function LoveGallery() {
         <DraggableCardBody
           key={img}
           className={`
+            love-card
             absolute
-            ${positions[index]}
+            ${positions[index] ?? "bottom-[3%] left-[65%] rotate-[8deg]"}
             bg-white
             rounded-xl
             shadow-2xl
@@ -140,7 +144,7 @@ export default function LoveGallery() {
                 pointer-events-none
               `}
             >
-              {captions[index]}
+              {captions[index] ?? "My Favorite"}
             </p>
           </div>
         </DraggableCardBody>

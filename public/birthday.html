@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Birthday</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -353,6 +353,147 @@
   .player.is-playing .player-btn #playIcon{display:none;}
   .player.is-playing .player-btn #pauseIcon{display:block;}
 
+  /* The reveal hint is shown on every screen size - without it the dim
+     watermark reads as an empty page and nobody knows to press it. */
+  .press-prompt{
+    display:flex;
+    position:fixed;
+    top:auto;
+    bottom:calc(116px + env(safe-area-inset-bottom,0px));
+    width:max-content;
+    max-width:calc(100vw - 48px);
+    text-align:center;
+  }
+  .prompt-tap{display:none;}
+  @media (pointer:coarse){
+    .prompt-click{display:none;}
+    .prompt-tap{display:inline;}
+  }
+
+  @media (max-width:767px), (max-height:500px) and (pointer:coarse){
+    body,.hero{min-height:100vh; min-height:100svh;}
+    .watermark-btn{
+      top:42%;
+      max-width:calc(100% - 32px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));
+      padding:12px;
+      touch-action:manipulation;
+    }
+    .watermark{font-size:clamp(6rem, 40vw, 18rem);}
+    .press-prompt{
+      font-size:12px;
+      line-height:1.5;
+      color:#aaa;
+    }
+    .intro-label{
+      bottom:calc(24px + env(safe-area-inset-bottom,0px));
+      width:calc(100% - 32px);
+      text-align:center;
+      font-size:12px;
+    }
+    .corner.br{
+      top:calc(20px + env(safe-area-inset-top,0px));
+      bottom:auto;
+      left:calc(16px + env(safe-area-inset-left,0px));
+      right:calc(16px + env(safe-area-inset-right,0px));
+      font-size:12px;
+      text-align:center;
+    }
+    .player{
+      bottom:calc(16px + env(safe-area-inset-bottom,0px));
+      width:min(380px, calc(100vw - 32px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));
+      gap:8px;
+      padding:12px;
+    }
+    .player-art{width:40px; height:40px;}
+    .player-title{font-size:14px;}
+    .player-artist{font-size:11px;}
+    .player-time{font-size:11px; width:34px;}
+    .player-progress{gap:4px;}
+    .player-btn{width:44px; height:44px; touch-action:manipulation;}
+    .player-seek{
+      min-width:0;
+      height:44px;
+      background-size:100% 3px;
+      background-repeat:no-repeat;
+      background-position:center;
+      touch-action:manipulation;
+    }
+    .player-seek::-webkit-slider-thumb{width:16px; height:16px; opacity:1;}
+    .player-seek::-moz-range-thumb{width:16px; height:16px; opacity:1;}
+    .player-seek:focus-visible{outline:2px solid #fff; outline-offset:2px;}
+  }
+
+  /* Scroll-down cue shown after the reveal + balloons settle, so the
+     viewer knows there's more to see below. Hidden until the burn
+     sequence calls showScrollCue(). */
+  .scroll-cue{
+    position:fixed;
+    left:50%;
+    bottom:calc(96px + env(safe-area-inset-bottom,0px));
+    transform:translateX(-50%) translateY(12px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    z-index:26;
+    opacity:0;
+    pointer-events:none;
+    color:#cfcfcf;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    background:rgba(0,0,0,0.45);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:999px;
+    padding:10px 18px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:opacity 0.6s ease, transform 0.6s ease, background 0.2s ease;
+  }
+  .scroll-cue.is-visible{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+    pointer-events:auto;
+  }
+  .scroll-cue:hover, .scroll-cue:active{background:rgba(0,0,0,0.65);}
+  .scroll-cue .mouse{
+    width:22px;
+    height:34px;
+    border:1.5px solid currentColor;
+    border-radius:12px;
+    position:relative;
+  }
+  .scroll-cue .mouse::after{
+    content:'';
+    position:absolute;
+    top:6px;
+    left:50%;
+    width:3px;
+    height:7px;
+    margin-left:-1.5px;
+    border-radius:2px;
+    background:currentColor;
+    animation:scroll-dot 1.6s ease-in-out infinite;
+  }
+  @keyframes scroll-dot{
+    0%{opacity:0; transform:translateY(0);}
+    30%{opacity:1;}
+    70%{opacity:1; transform:translateY(10px);}
+    100%{opacity:0; transform:translateY(12px);}
+  }
+  @media (pointer:coarse){
+    .scroll-cue .mouse{display:none;}
+    .scroll-cue{padding:12px 20px; min-height:44px;}
+  }
+
+  @media (max-height:500px) and (pointer:coarse){
+    .watermark-btn{top:36%;}
+    .watermark{font-size:min(32vw, 30svh);}
+    .player{bottom:calc(8px + env(safe-area-inset-bottom,0px));}
+  }
+
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
   }
@@ -383,6 +524,11 @@
   <button class="watermark-btn" id="triggerBtn" aria-label="Press to reveal your age">
     <span class="watermark" id="watermark">00</span>
     <span class="reveal-flash" id="revealFlash"></span>
+    <span class="press-prompt" id="pressPrompt">
+      <span class="ring"></span>
+      <span class="prompt-click">Click here</span>
+      <span class="prompt-tap">Tap here</span>
+    </span>
   </button>
 
   <!-- <div class="press-prompt" id="pressPrompt">
@@ -416,6 +562,11 @@
   </button>
 </div>
 
+<button class="scroll-cue" id="scrollCue" type="button" aria-label="Scroll down to see more">
+  <span class="mouse" aria-hidden="true"></span>
+  <span>Scroll down</span>
+</button>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script type="module">
   import { balloons, textBalloons } from "https://cdn.jsdelivr.net/npm/balloons-js/+esm";
@@ -426,7 +577,7 @@
   // 14:30 IST on Aug 2, 2003 == 09:00 UTC on Aug 2, 2003  (birth year set so the reveal lands on 23)
   const IST_OFFSET_MS = (5 * 60 + 30) * 60000;
   // const BIRTH_UTC_MS = Date.UTC(2003, 7, 2, 9, 0, 0);
-  const BIRTH_UTC_MS = Date.UTC(2003, 7, 4, 18, 30, 0);
+  const BIRTH_UTC_MS = Date.UTC(2006, 8, 4, 18, 30, 0);
   const shiftedBirth = new Date(BIRTH_UTC_MS + IST_OFFSET_MS); // read with getUTC* for IST wall-clock parts
 
   function computeParts(){
@@ -491,17 +642,131 @@
 
  
 
-  function fireBalloonsJS(){
+  // ---------------- balloons-js text, fitted to the viewport ----------------
+  // balloons-js lays a text line out at whatever font-size it's handed and lets
+  // the rest fly off the edges - on a phone "Happy Birthday" at 120px only ever
+  // showed a couple of letters. So: measure the line the way the library does,
+  // pick the largest font-size that fits the screen (breaking the line into
+  // words when one line can't be read at a decent size), then re-position the
+  // balloons ourselves. The library reserves 20px of empty padding around every
+  // single balloon, which on a narrow screen is most of the width - laying them
+  // out on glyph widths instead is what buys the letters their size back.
+  const BALLOON_MAX_FONT = 120;
+  const BALLOON_MIN_FONT = 34;
+  const BALLOON_SPLIT_BELOW = 60;  // below this, two big lines beat one squinty one
+  const BALLOON_BOX_PAD = 20;      // padding the library bakes into every balloon box
+  const BALLOON_GAP = 6;           // gap we leave between neighbouring letters
+  const BALLOON_EDGE_GUARD = 14;   // breathing room at each edge
+  const BALLOON_REF_FONT = 100;    // measure once at this size; glyph widths scale linearly
+
+  function balloonChars(text){
+    if(window.Intl && Intl.Segmenter){
+      // same segmentation the library uses, so an emoji counts as one balloon
+      return Array.from(new Intl.Segmenter().segment(text), s => s.segment);
+    }
+    return Array.from(text);
+  }
+
+  let balloonMeasureEl = null;
+  function balloonGlyphWidth(char){
+    if(!balloonMeasureEl){
+      balloonMeasureEl = document.createElement('span');
+      balloonMeasureEl.style.cssText =
+        'position:absolute;visibility:hidden;left:-9999px;top:0;' +
+        'font-family:BalloonsJS, system-ui;font-weight:bold;font-size:' + BALLOON_REF_FONT + 'px;' +
+        'line-height:1;white-space:nowrap;min-width:1ch;';
+      document.body.appendChild(balloonMeasureEl);
+    }
+    balloonMeasureEl.textContent = char;
+    return balloonMeasureEl.offsetWidth;
+  }
+
+  function balloonAvailableWidth(){
+    const viewport = document.documentElement.clientWidth || window.innerWidth;
+    return Math.max(120, viewport - BALLOON_EDGE_GUARD * 2);
+  }
+
+  // largest font-size at which this line still fits across the screen
+  function balloonLineFontSize(text){
+    const chars = balloonChars(text);
+    const glyphs = chars.reduce((sum, c) => sum + balloonGlyphWidth(c), 0);
+    if(!glyphs) return BALLOON_MAX_FONT;
+    const room = balloonAvailableWidth() - (chars.length - 1) * BALLOON_GAP;
+    if(room <= 0) return 0;
+    return Math.floor((room * BALLOON_REF_FONT) / glyphs);
+  }
+
+  function fitBalloonLines(text, color){
+    let lines = [text];
+    let size = balloonLineFontSize(text);
+    const words = text.split(/\s+/).filter(Boolean);
+    if(words.length > 1 && size < BALLOON_SPLIT_BELOW){
+      const wordSize = Math.min.apply(null, words.map(balloonLineFontSize));
+      if(wordSize > size){ lines = words; size = wordSize; }
+    }
+    size = Math.max(BALLOON_MIN_FONT, Math.min(BALLOON_MAX_FONT, size));
+    return lines.map(t => ({ text:t, color:color, fontSize:size }));
+  }
+
+  // re-centre each line on glyph widths, and scale down as a last resort so a
+  // line always lands inside the screen even if the estimate above ran long
+  function layoutBalloonLines(container, lines){
+    const all = Array.prototype.slice.call(container.querySelectorAll('text-balloon'));
+    const avail = balloonAvailableWidth();
+    const viewport = document.documentElement.clientWidth || window.innerWidth;
+    let index = 0;
+    lines.forEach(line => {
+      const items = all.slice(index, index + balloonChars(line.text).length);
+      index += items.length;
+      if(!items.length) return;
+      const glyphs = items.map(el => Math.max(1, el.offsetWidth - BALLOON_BOX_PAD));
+      const glyphSum = glyphs.reduce((sum, w) => sum + w, 0);
+      const gaps = (items.length - 1) * BALLOON_GAP;
+      const scale = Math.min(1, Math.max(0.2, (avail - gaps) / glyphSum));
+      let x = (viewport - (glyphSum * scale + gaps)) / 2;
+      items.forEach((el, i) => {
+        const w = glyphs[i] * scale;
+        if(scale < 1) el.style.scale = String(scale); // composes with the library's transform animation
+        el.style.left = (x + w / 2 - el.offsetWidth / 2) + 'px';
+        x += w + BALLOON_GAP;
+      });
+    });
+  }
+
+  // the balloon font is embedded in the library and only registers once a
+  // <text-balloons> container is in the DOM - warm it up first so the measuring
+  // above runs against the real glyphs instead of a fallback face
+  async function warmBalloonFont(textBalloons){
+    try{
+      textBalloons([]); // creates the container + @font-face style, no balloons
+      if(document.fonts && document.fonts.load){
+        await document.fonts.load('bold ' + BALLOON_REF_FONT + 'px BalloonsJS');
+      }
+    }catch(err){ /* no font metrics available: the fallback face is close enough */ }
+  }
+
+  async function fireBalloonsJS(){
     if(balloonsJSFired) return;
     balloonsJSFired = true;
-    if(window.__balloonsJS){
-      const { balloons, textBalloons } = window.__balloonsJS;
-      balloons();
-      textBalloons([
-        { text: "Happy Birthday", fontSize: 120, color: "#ffffff" },
-        { text: "🎉🎂🎈", fontSize: 120, color: "#ffffff" },
-      ]);
-    }
+    if(!window.__balloonsJS) return;
+
+    const { balloons, textBalloons } = window.__balloonsJS;
+    balloons();
+
+    await warmBalloonFont(textBalloons);
+    const lines = fitBalloonLines("Happy Birthday", "#ffffff")
+      .concat(fitBalloonLines("\u{1F389}\u{1F382}\u{1F388}", "#ffffff"));
+
+    // drop the empty warm-up container before the real one goes in
+    document.querySelectorAll('text-balloons').forEach(el => {
+      if(!el.querySelector('text-balloon')) el.remove();
+    });
+    textBalloons(lines);
+
+    const container = document.querySelector('text-balloons');
+    if(container) layoutBalloonLines(container, lines);
+
+    if(balloonMeasureEl){ balloonMeasureEl.remove(); balloonMeasureEl = null; }
   }
 
   // brings a background photo in behind the burned number once it's revealed -
@@ -635,6 +900,10 @@
   function burnAndRelease(){
     if(burning || revealed) return;
     burning = true;
+
+    // Hide the "Tap here" prompt the instant the user presses, before
+    // the burn animation even starts.
+    gsap.set(pressPrompt, {opacity:0});
 
     const rect = watermarkEl.getBoundingClientRect();
     const cw = Math.ceil(rect.width);
@@ -817,7 +1086,10 @@
       watermarkEl.classList.add('is-revealed');
       fireBalloonsJS();
       revealBackground();
-      gsap.to(pressPrompt, {opacity:0, duration:0.5, ease:'power2.out'});
+      // prompt already hidden at press time
+      // Once the burn + balloon burst has had a moment to breathe,
+      // surface the scroll-down cue so the viewer knows there's more.
+      setTimeout(showScrollCue, 4200);
       gsap.fromTo(revealFlash,
         {scale:0.2, opacity:0.95},
         {scale:7.5, opacity:0, duration:1.3, ease:'power2.out'}
@@ -847,6 +1119,31 @@
       triggerBtn.setAttribute('aria-disabled', 'true');
     }, null, '+=1.4');
   }
+
+  // ---------------- scroll-down cue ----------------
+  // After the reveal + balloons settle, show a gentle "scroll down"
+  // prompt. Clicking it asks the parent page (which embeds this file
+  // in an iframe) to scroll to the next section. If there's no parent
+  // (file opened directly), it scrolls its own window instead.
+  const scrollCue = document.getElementById('scrollCue');
+  function showScrollCue(){
+    if(!scrollCue) return;
+    scrollCue.classList.add('is-visible');
+  }
+  function dismissScrollCue(){
+    if(!scrollCue) return;
+    scrollCue.classList.remove('is-visible');
+  }
+  scrollCue && scrollCue.addEventListener('click', () => {
+    dismissScrollCue();
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'birthday-scroll-down' }, '*');
+      }
+    } catch (e) { /* cross-origin parent: fall through to local scroll */ }
+    // Also scroll within this iframe in case it's viewed standalone
+    window.scrollTo({ top: window.innerHeight + 80, behavior: 'smooth' });
+  });
 
   triggerBtn.addEventListener('click', burnAndRelease);
 

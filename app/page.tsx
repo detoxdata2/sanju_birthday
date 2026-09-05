@@ -8,6 +8,7 @@ import { Section } from "lucide-react";
 import DoodleBackgroundDemo from "@/components/DoodleBg";
 import FloatingNotes from "@/components/Butterfly";
 import ShowtimeCountdown from "@/components/Curtain";
+import BirthdayScrollBridge from "@/components/BirthdayScrollBridge";
 
 
 export default function Home() {
@@ -18,11 +19,12 @@ export default function Home() {
       // change this date to the desired countdown target date
       showPreviewButton={true}
       
-      targetDate={new Date('2026-08-11T00:00:00+05:30')}
+      targetDate={new Date('2026-09-05T00:00:00+05:30')}
      
      
     >
-<div className=" h-full w-full overflow-x-hidden overflow-y-scroll snap-y snap-mandatory bg-zinc-50 dark:bg-black select-none scroll-smooth">
+<BirthdayScrollBridge />
+<div className="birthday-scroll h-full w-full overflow-x-hidden overflow-y-auto md:snap-y md:snap-mandatory bg-zinc-50 dark:bg-black select-none scroll-smooth">
       {/* <section className="h-screen w-full snap-start snap-always shrink-0">
      
 
@@ -36,18 +38,19 @@ export default function Home() {
              {/* <HeroSection /> */}
              
 
-              <section  className="h-screen  w-full snap-start snap-always shrink-0 overflow-visible relative z-10" >
+              <section className="birthday-embed h-dvh w-full snap-start shrink-0 relative z-10">
                    <iframe
       src="/birthday.html"
       title="Birthday Reveal"
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         border: "none",
         display: "block",
       }}
       allow="autoplay"
-    />  
+    />
+                <a href="#birthday-hero" className="embed-next md:hidden">Continue to photos</a>
               </section>
 
          
@@ -57,17 +60,17 @@ export default function Home() {
         
      
  
-    <section  className="h-screen  w-full snap-start snap-always shrink-0 overflow-visible relative z-10" >
+    <section id="birthday-hero" className="h-dvh w-full snap-start shrink-0 relative z-10">
 <HeroSection />
     </section>
 
 
-      <section  className="h-screen  w-full snap-start snap-always shrink-0 overflow-visible relative z-10" >
+      <section className="h-dvh w-full snap-start shrink-0 relative z-10">
         <FloatingNotes/>
  <LoveGallery/>
     </section>
 
-    <section  className="h-screen  w-full snap-start snap-always shrink-0 overflow-visible relative z-10" >
+    <section className="h-dvh w-full snap-start shrink-0 relative z-10">
       
       <DoodleBackgroundDemo/>
 
@@ -80,17 +83,17 @@ export default function Home() {
 
 
 
-    <section className="h-screen w-full snap-start overflow-y-scroll snap-always shrink-0 relative ">
+    <section className="h-dvh w-full snap-start shrink-0 relative">
         <StellarCardGallerySingle />
       </section>
 
-         <section  className="h-screen  w-full snap-start snap-always shrink-0 overflow-visible relative z-10" >
+         <section className="birthday-embed h-dvh w-full snap-start shrink-0 relative z-10">
                    <iframe
       src="/last.html"
       title="Birthday Reveal"
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         border: "none",
         display: "block",
       }}
