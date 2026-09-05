@@ -85,7 +85,7 @@ function CardProvider({ children }: { children: React.ReactNode }) {
     { id: "2", imageUrl: "/images/group8.jpeg", alt: "Best Memories", title: "Best Memories" },
     { id: "3", imageUrl: "/images/group1.jpeg", alt: "Best Memories", title: "Best Memories" },
     { id: "4", imageUrl: "/images/group3.jpeg", alt: "Best Memories", title: "Best Memories" },
-    { id: "5", imageUrl: "/images/group5.jpeg", alt: "Best Memories", title: "Best Memories" },
+    { id: "5", imageUrl: "/images/group15.jpeg", alt: "Best Memories", title: "Best Memories" },
     { id: "6", imageUrl: "/images/sanju1.jpeg", alt: "Best Memories", title: "Best Memories" },
     { id: "7", imageUrl: "/images/sanju2.jpeg", alt: "Best Memories", title: "Best Memories" },
     { id: "8", imageUrl: "/images/sanju3.jpeg", alt: "Best Memories", title: "Best Memories" },
